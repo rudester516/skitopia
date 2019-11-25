@@ -1,0 +1,52 @@
+<h1><%= @product["name"] %></h1>
+<div class="container">
+  <% if @product["dated_ticket_types"].present? %>
+    <% @product["dated_ticket_types"].each do |dated_ticket_type| %>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><%= dated_ticket_type["title"] %></h5>
+          <h6 class="card-subtitle mb-2 text-muted"><%= dated_ticket_type["ticket_type_restrictions"] %></h6>
+
+          <div class="row">
+            <% dated_ticket_type["days"].each do |day| %>
+              <div class="col-md-4">
+                <div class="card">
+                  <div class=card-body>
+                    <h6 class=card-title><%= day["available_date"].to_date.strftime("%A, %b %-d, %Y") %></h6>
+                    <% weather = @forecast.find {|f| f["valid_date"] == day["available_date"] } %>
+                    <%= weather_forecast(weather) %>
+                    <h6><%= pricing(day["ticket"]["price"], weather) %></h6>
+                    <p><%= day["ticket"]["quantity_available"] %> tickets left</p>
+                    <button type="button" class="btn btn-primary">Add To Cart</button>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div> 
+    <% end %>
+  <% end %>
+  <% if @product["dateless_ticket_types"].present? %>
+    <% @product["dateless_ticket_types"].each do |dateless_ticket_type| %>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><%= dateless_ticket_type["title"] %></h5>
+          <h6 class="card-subtitle mb-2 text-muted"><%= dateless_ticket_type["ticket_type_restrictions"] %></h6>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="card">
+                <div class=card-body>
+                  <h6 class=card-title><%= number_to_currency(dateless_ticket_type["ticket"]["price"].to_i) %></h6>
+                  <p><%= dateless_ticket_type["ticket"]["quantity_available"] %> tickets left</p>
+                  <button type="button" class="btn btn-primary">Add To Cart</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+    <% end %>  
+  <% end %>
+</div>
